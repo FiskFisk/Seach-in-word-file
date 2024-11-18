@@ -9,11 +9,21 @@ def select_file():
     )
     if file_path:
         try:
-            with open(file_path, 'r') as file:
+            # Attempt to open the file with UTF-8 encoding
+            with open(file_path, 'r', encoding='utf-8') as file:
                 content = file.read()  # Read the file's content
                 text_box.config(text=content)  # Update the label with the file's content
+        except UnicodeDecodeError:
+            # If UTF-8 fails, try with 'latin1' encoding (common fallback)
+            try:
+                with open(file_path, 'r', encoding='latin1') as file:
+                    content = file.read()
+                    text_box.config(text=content)
+            except Exception as e:
+                text_box.config(text="Error reading file!")  # Display a generic error
+                print(f"Error: {e}")
         except Exception as e:
-            text_box.config(text="Error reading file!")  # Display an error if file can't be read
+            text_box.config(text="Error reading file!")  # Display a generic error
             print(f"Error: {e}")
 
 # Create the main application window
