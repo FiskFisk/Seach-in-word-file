@@ -12,12 +12,17 @@ def select_file():
 
 # Create the main application window
 root = tk.Tk()
-root.title("Text in a Box with File Input")
-root.geometry("300x250")  # Adjusted size to fit the button
+root.title("Resizable Box with File Input")
+root.geometry("400x300")  # Initial size of the window
 
-# Create a frame (the box)
-box = tk.Frame(root, bg="lightgray", width=200, height=100, highlightbackground="black", highlightthickness=1)
-box.pack(pady=20)  # Add padding to center the box
+# Configure the grid for resizing
+root.rowconfigure(0, weight=1)  # The box row
+root.rowconfigure(1, weight=0)  # The button row (fixed size)
+root.columnconfigure(0, weight=1)  # Center column for both widgets
+
+# Create a frame (the resizable box)
+box = tk.Frame(root, bg="lightgray", highlightbackground="black", highlightthickness=1)
+box.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)  # Expand in all directions
 
 # Add a label (the text inside the box)
 label = tk.Label(box, text="This is some text!", bg="lightgray", font=("Arial", 12))
@@ -25,7 +30,7 @@ label.place(relx=0.5, rely=0.5, anchor="center")  # Center the label within the 
 
 # Add a button below the box
 file_button = tk.Button(root, text="Select a File", command=select_file, font=("Arial", 10))
-file_button.pack(pady=20)  # Add padding to separate the button from the box
+file_button.grid(row=1, column=0, pady=10)  # Fixed position below the box
 
 # Run the application
 root.mainloop()
