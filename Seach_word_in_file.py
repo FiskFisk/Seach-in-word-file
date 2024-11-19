@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import filedialog
+from tkinter import filedialog, ttk
 import tkinter as tk
 
 # Function to handle file selection and display its content
@@ -26,10 +26,6 @@ def select_file():
                 text_box.delete("1.0", tk.END)
                 text_box.insert(tk.END, "Error reading file!")  # Display a generic error
                 print(f"Error: {e}")
-        except Exception as e:
-            text_box.delete("1.0", tk.END)
-            text_box.insert(tk.END, "Error reading file!")  # Display a generic error
-            print(f"Error: {e}")
 
 # Function to highlight search term in the text box
 def search_word():
@@ -37,6 +33,7 @@ def search_word():
     if search_term:
         text_box.tag_remove("highlight", "1.0", tk.END)  # Remove previous highlights
         start_pos = "1.0"
+        count = 0  # Initialize match count
         while True:
             start_pos = text_box.search(search_term, start_pos, stopindex=tk.END, nocase=True)
             if not start_pos:
@@ -45,6 +42,12 @@ def search_word():
             text_box.tag_add("highlight", start_pos, end_pos)
             text_box.tag_configure("highlight", background="yellow", foreground="black")
             start_pos = end_pos  # Move start position after the found word
+            count += 1  # Increment match count
+        
+        # Update match count label
+        result_label.configure(text=f"Matches found: {count}")
+    else:
+        result_label.configure(text="No search term entered.")
 
 # Initialize the CustomTkinter application
 ctk.set_appearance_mode("System")  # Use system theme (can also be "Dark" or "Light")
@@ -63,14 +66,30 @@ app.grid_columnconfigure(0, weight=1)  # Single column layout
 text_frame = ctk.CTkFrame(app, corner_radius=10)
 text_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-# Add a scrollable Text widget (using tkinter.Text)
+# Add a styled scrollbar and scrollable Text widget
+style = ttk.Style()
+style.theme_use("clam")  # Use a modern theme
+style.configure(
+    "Vertical.TScrollbar",
+    gripcount=0,
+    background="lightgray",
+    troughcolor="gray20",
+    bordercolor="black",
+    arrowcolor="black",
+    relief="flat",
+)
+
+scrollbar = ttk.Scrollbar(text_frame, orient="vertical", style="Vertical.TScrollbar")
 text_box = tk.Text(
     text_frame,
     wrap="word",  # Wrap text at word boundaries
     font=("Arial", 12),
     height=10,
     width=50,
+    yscrollcommand=scrollbar.set  # Link the scrollbar to the text box
 )
+scrollbar.config(command=text_box.yview)
+scrollbar.pack(side="right", fill="y")
 text_box.pack(fill="both", expand=True, padx=5, pady=5)
 
 # Create a frame for search input and button
@@ -91,6 +110,18 @@ search_button = ctk.CTkButton(
 )
 search_button.pack(side="right", padx=5, pady=5)
 
+# Add a styled frame to display match count
+result_frame = ctk.CTkFrame(app, corner_radius=10, border_width=1, border_color="gray")
+result_frame.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
+
+result_label = ctk.CTkLabel(
+    result_frame,
+    text="Matches found: 0",
+    font=("Arial", 12),
+    anchor="w"
+)
+result_label.pack(fill="both", expand=True, padx=10, pady=5)
+
 # Add a button to select a file
 file_button = ctk.CTkButton(
     app,
@@ -99,7 +130,7 @@ file_button = ctk.CTkButton(
     font=("Arial", 12),
     corner_radius=8
 )
-file_button.grid(row=2, column=0, pady=10)
+file_button.grid(row=3, column=0, pady=10)
 
 # Run the application
 app.mainloop()
