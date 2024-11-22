@@ -54,7 +54,7 @@ ctk.set_appearance_mode("System")  # Use system theme (can also be "Dark" or "Li
 ctk.set_default_color_theme("blue")  # Set color theme (e.g., "blue", "green")
 
 app = ctk.CTk()  # Create the main application window
-app.title("CustomTkinter File Viewer with Search")
+app.title("Seach word in file")
 app.geometry("600x400")  # Set initial size
 
 # Configure grid layout
